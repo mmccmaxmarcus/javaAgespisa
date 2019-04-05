@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+
+	<ui:define name="conteudo">
+
+		<h:form id="formList">
+			<p:panel header="Listagem de cidades">
+				<p:dataTable var="cidade" value="#{cidadeBean.cidades}"
+					emptyMessage="true" paginator="true" rows="15" id="table"
+					paginatorPosition="top">
+
+					<p:column filterBy="#{cidade.codigo}" headerText="Código"
+						sortBy="#{cidade.codigo}">
+						<h:outputText value="#{cidade.codigo}" />
+					</p:column>
+					<p:column filterBy="#{cidade.nome}" headerText="Cidade"
+						sortBy="#{cidade.nome}">
+						<h:outputText value="#{cidade.nome}" />
+					</p:column>
+					<p:column filterBy="#{cidade.estado.nome}" headerText="Estado"
+						sortBy="#{cidade.estado.nome}">
+						<h:outputText value="#{cidade.estado.sigla} - #{cidade.estado.nome}" />
+					</p:column>
+					
+
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

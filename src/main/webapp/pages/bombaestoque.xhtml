@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+
+	<ui:define name="conteudo">
+
+		<h:form id="formList">
+			<p:panel header="Listagem de Bombas em Estoque">
+				<p:dataTable var="estoque"
+					value="#{bombasEstoqueBean.bombasEstoques}"
+					emptyMessage="nenhum registro encontrado" paginator="true"
+					rows="15" id="table" paginatorPosition="top"
+					style="text-align: center">
+					<f:facet name="header">
+						<p:commandButton value="Novo" title="Cadastrar Nova Bomba"
+							icon="ui-icon-plus" oncomplete="PF('dlg').show();"
+							update=":formCadastro:panel"
+							actionListener="#{bombasEstoqueBean.novo()}">
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+					</f:facet>
+
+					<p:column headerText="Fabricante"
+						filterBy="#{estoque.bomba.fabricante}">
+						<p:outputLabel value="#{estoque.bomba.fabricante}" />
+					</p:column>
+
+					<p:column headerText="Modelo" filterBy="#{estoque.bomba.modelo}">
+						<p:outputLabel value="#{estoque.bomba.modelo}" />
+					</p:column>
+
+					<p:column headerText="Potência"
+						filterBy="#{estoque.bomba.potencia}">
+						<p:outputLabel value="#{estoque.bomba.potencia}" />
+					</p:column>
+
+					<p:column headerText="Quantidade" filterBy="#{estoque.quantidade}"
+						sortBy="#{estoque.quantidade}">
+						<p:outputLabel value="#{estoque.quantidade}" />
+					</p:column>
+
+					<p:column headerText="Opções">
+						<p:commandButton icon="ui-icon-search" title="Vizualizar tudo"
+							oncomplete="PF('dlgLista').show();"
+							update=":mensagem :formDlgListagem:pnlOutput :formList:table">
+							<f:setPropertyActionListener value="#{estoque}"
+								target="#{bombasEstoqueBean.bombasEstoque}" />
+						</p:commandButton>
+
+						<p:commandButton value="Editar"
+							actionListener="#{bombasEstoqueBean.editar}"
+							icon="ui-icon-pencil"
+							update=":mensagem :formCadastro:panel :formList:table"
+							oncomplete="PF('dlg').show();">
+							<f:attribute name="bombaEstoque" value="#{bomba}" />
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+
+						<p:commandButton value="Excluir"
+							actionListener="#{bombasEstoqueBean.excluir}"
+							update=":mensagem :formList:table " icon="ui-icon-trash">
+							<p:confirm header="Confirmação"
+								message="Deseja realmente excluir #{estoque.bomba.fabricante.nome} #{estoque.bomba.modelo} - #{estoque.bomba.potencia}?"
+								icon="ui-icon-alert" />
+							<f:attribute name="bombaEstoque" value="#{estoque}" />
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+
+				<p:confirmDialog global="true" hideEffect="fade" showEffect="fade">
+					<p:commandButton value=" Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+
+					<p:commandButton value="Nao" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+
+			</p:panel>
+		</h:form>
+
+		<p:dialog header="Cadastrar bomba em estoque" widgetVar="dlg"
+			modal="true" resizable="false" minimizable="false" appendTo="@(body)"
+			position="center" maximizable="true" closable="true">
+			<h:form id="formCadastro">
+				<p:panelGrid columns="4" id="panel">
+
+					<p:outputLabel value="Fabricante" for="fabricante" />
+					<p:autoComplete
+						value="#{bombasEstoqueBean.bombasEstoque.bomba.fabricante}"
+						id="fabricante" var="f" itemValue="#{f}" itemLabel="#{f.nome}"
+						size="20" completeMethod="#{bombasEstoqueBean.buscaFabricantes}"
+						forceSelection="true" converter="ConverterFabricante" />
+
+					<p:outputLabel value="Modelo" for="modelo" />
+					<p:inputText id="modelo" maxlength="45" size="20" required="true"
+						requiredMessage="O campo 'modelo' deve ser preenchido"
+						value="#{bombasEstoqueBean.bombasEstoque.bomba.modelo}"
+						converter="maiusculoConverter">
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+
+					<p:outputLabel value="Potência" for="potencia" />
+					<p:inputText id="potencia" maxlength="10" size="5" required="true"
+						requiredMessage="O campo 'potência' deve ser preenchido"
+						value="#{bombasEstoqueBean.bombasEstoque.bomba.potencia}"
+						converter="maiusculoConverter">
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+
+					<p:outputLabel value="Vazão" for="vazao" />
+					<p:inputText maxlength="10" size="5" required="false"
+						value="#{bombasEstoqueBean.bombasEstoque.bomba.vazao}" id="vazao"
+						converter="maiusculoConverter" />
+
+					<p:outputLabel value="Altura Manumétrica" />
+					<p:inputText maxlength="10" size="5" required="false"
+						value="#{bombasEstoqueBean.bombasEstoque.bomba.alturaManumetrica}"
+						converter="maiusculoConverter" />
+
+					<p:outputLabel value="Tombamento" />
+					<p:inputText maxlength="45" size="20" required="false"
+						value="#{bombasEstoqueBean.bombasEstoque.bomba.tombamento}"
+						converter="maiusculoConverter" />
+
+					<p:outputLabel value="Quantidade" for="quantidade" />
+					<p:inputText size="5" required="true" id="quantidade"
+						requiredMessage="O campo 'quantidade' deve ser preenchido"
+						value="#{bombasEstoqueBean.bombasEstoque.quantidade}"
+						validatorMessage="Valor informado só de 0 a 9999"
+						converterMessage="O campo 'quantidade' não aceita caractere">
+						<f:validateLongRange minimum="0" maximum="9999" />
+
+					</p:inputText>
+
+				</p:panelGrid>
+
+				<div align="right">
+				
+					<p:panelGrid columns="2">
+						<p:commandButton value="Voltar" oncomplete="PF('dlg').hide();" />
+						<p:commandButton value="Salvar"
+							actionListener="#{bombasEstoqueBean.salvar}"
+							update=":mensagem :formCadastro:panel :formList:table" />
+					</p:panelGrid>
+				</div>
+
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Lista completa da bomba" widgetVar="dlgLista"
+			closable="true" resizable="false" position="center"
+			minimizable="false">
+			<h:form id="formDlgListagem">
+				<p:panelGrid id="pnlOutput" columns="2">
+
+					<p:outputLabel value="Vazão" />
+					<p:outputLabel value="#{bombasEstoqueBean.bombasEstoque.bomba.vazao}" />
+
+					<p:outputLabel value="Altura Manométrica" />
+					<p:outputLabel
+						value="#{bombasEstoqueBean.bombasEstoque.bomba.alturaManumetrica}" />
+
+					<p:outputLabel value="Tombamento" />
+					<p:outputLabel
+						value="#{bombasEstoqueBean.bombasEstoque.bomba.tombamento}" />
+
+				</p:panelGrid>
+
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

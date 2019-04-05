@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewAction action="#{entradaBombaBean.novo()}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="conteudo">
+
+		<h:form id="formList">
+			<div>
+				<p:panel header="Bomba em estoque" toggleable="true">
+					<p:dataTable id="table" var="estoque"
+						value="#{entradaBombaBean.bombasEstoques}" widgetVar="bombasTable"
+						rows="10" paginator="true" rowsPerPageTemplate="5,10,15,30"
+						emptyMessage="Nenhum registro encontrado"
+						filteredValue="#{entradaBombaBean.bombasEstoquesFilters}"
+						paginatorPosition="top" style="text-align:center;">
+
+
+						<f:facet name="header">
+							<div align="right">
+								<p:outputPanel>
+									<h:outputText value="Pesquisar: " />
+									<p:inputText id="globalFilter"
+										onkeyup="PF('bombasTable').filter();" style="width:150px"
+										placeholder="Pesquisar bomba" />
+								</p:outputPanel>
+							</div>
+
+						</f:facet>
+
+						<p:column headerText="Fabricante"
+							filterBy="#{estoque.laudo.bomba.fabricante.nome}" width="100px;">
+							<p:outputLabel value="#{estoque.laudo.bomba.fabricante.nome}" />
+						</p:column>
+
+						<p:column headerText="Modelo"
+							filterBy="#{estoque.laudo.bomba.modelo}">
+							<div align="left">
+								<p:outputLabel value="#{estoque.laudo.bomba.modelo}" />
+							</div>
+						</p:column>
+
+						<p:column headerText="Potência"
+							filterBy="#{estoque.laudo.bomba.potencia}" width="100px;">
+							<p:outputLabel value="#{estoque.laudo.bomba.potencia}" />
+						</p:column>
+
+						<p:column headerText="Status"
+							filterBy="#{estoque.laudo.situacaoFormatada()}" width="100px;">
+							<p:outputLabel value="#{estoque.laudo.situacaoFormatada()}" />
+						</p:column>
+
+						<p:column headerText="Opções" style="width:130px;">
+							<div align="center">
+								<p:commandButton icon="ui-icon-circle-plus" value="Adicionar"
+									actionListener="#{entradaBombaBean.adiciona}"
+									update=":formList:tableItens :formList:pnlFinalizacao ">
+									<f:attribute name="bombaAdicionada" value="#{estoque}" />
+								</p:commandButton>
+							</div>
+							<br />
+							<div align="center">
+								<p:commandButton
+									update=":formList:table :formBomba:pnlBomba :formBomba:pnlBombaDetalhe :formBomba:pnlBombaLaudo"
+									oncomplete="PF('dlgBomba').show()" icon="ui-icon-search"
+									title="Detalhes da bomba" value="Vizualizar">
+									<f:setPropertyActionListener value="#{estoque}"
+										target="#{entradaBombaBean.bombasEstoque}" />
+								</p:commandButton>
+							</div>
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+			</div>
+
+			<p:separator />
+
+			<p:remoteCommand name="atualizarEditar"
+				actionListener="#{entradaBombaBean.atualizaQuantidadeParcial()}"
+				update="formList:tableItens :formList:pnlFinalizacao" />
+
+			<div>
+				<p:panel header="Bombas Inseridas" toggleable="true">
+					<p:dataTable id="tableItens" rows="10" paginator="true"
+						paginatorPosition="top" emptyMessage="Nenhum item adicionado"
+						var="itensEntrada" value="#{entradaBombaBean.itensBombaEntradas}">
+
+						<p:ajax event="cellEdit" oncomplete="atualizarEditar" />
+
+						<p:column headerText="Descrição da bomba">
+							<h:outputText
+								value="#{itensEntrada.bombasEstoqueItem.laudo.bomba.fabricante.nome}
+								 #{itensEntrada.bombasEstoqueItem.laudo.bomba.modelo} - #{itensEntrada.bombasEstoqueItem.laudo.bomba.potencia}" />
+						</p:column>
+
+						<p:column headerText="Qtde." style="width:15%;"
+							styleClass="centralizaColuna">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{itensEntrada.quantidadePacialItem}" />
+								</f:facet>
+								<f:facet name="input">
+									<h:inputText value="#{itensEntrada.quantidadePacialItem}" />
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+
+						<p:columnGroup type="footer">
+							<p:row>
+								<p:column colspan="1" style="text-align:right;"
+									footerText="Quantidade Total:" />
+								<p:column
+									footerText="#{entradaBombaBean.entradaBomba.quantidadeTotal}"
+									styleClass="negrito	" />
+							</p:row>
+						</p:columnGroup>
+
+					</p:dataTable>
+					<br />
+
+					<div align="left">
+						<h:panelGrid id="pnlFinalizacao" columns="3">
+							<p:commandButton value="Finalizar"
+								title="Finalizar Entrada de Bomba"
+								actionListener="#{entradaBombaBean.finalizar()}"
+								oncomplete="PF('dlgFinalizar').show();"
+								update=":mensagem :formFinalizar:pnlFinalizar"
+								rendered="#{entradaBombaBean.ativaBotaoFinalizar == true}">
+								<f:actionListener
+									type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+							</p:commandButton>
+
+						</h:panelGrid>
+					</div>
+
+				</p:panel>
+			</div>
+		</h:form>
+
+
+		<p:dialog header="Informações gerais da bomba" widgetVar="dlgBomba"
+			modal="true" showEffect="fade" hideEffect="fade" resizable="false"
+			position="center" appendTo="@(body)" minimizable="false">
+			<h:form id="formBomba">
+				<div align="center">
+
+					<p:panel header="Modelo da Bomba" toggleable="true"
+						toggleOrientation="horizontal">
+						<p:panelGrid columns="2" id="pnlBomba" style="width:90%;">
+							<p:outputLabel value="Código" />
+							<p:outputLabel value="#{entradaBombaBean.bombasEstoque.codigo}" />
+
+							<p:outputLabel value="Data estoque" />
+							<p:outputLabel
+								value="#{entradaBombaBean.bombasEstoque.dataEntrouEstoque}"
+								title="Data em que foi adicionada ao estoque">
+								<f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR"
+									timeZone="America/Sao_Paulo" />
+							</p:outputLabel>
+
+							<p:outputLabel value="Fabricante" />
+							<p:outputLabel
+								value="#{entradaBombaBean.bombasEstoque.laudo.bomba.fabricante.nome}" />
+
+							<p:outputLabel value="Modelo" />
+							<p:outputLabel
+								value="#{entradaBombaBean.bombasEstoque.laudo.bomba.modelo}" />
+
+							<p:outputLabel value="Potência" />
+							<p:outputLabel
+								value="#{entradaBombaBean.bombasEstoque.laudo.bomba.potencia}" />
+						</p:panelGrid>
+					</p:panel>
+
+					<br />
+
+					<p:panel header="Detalhes" toggleable="true"
+						toggleOrientation="horizontal">
+						<p:panelGrid columns="2" id="pnlBombaDetalhe" style="width:90%;">
+							<p:outputLabel value="Vazão" />
+							<p:outputLabel
+								value="#{entradaBombaBean.bombasEstoque.laudo.bomba.vazao}" />
+
+							<p:outputLabel value="Altura Manométrica" />
+							<p:outputLabel
+								value="#{entradaBombaBean.bombasEstoque.laudo.bomba.alturaManumetrica}" />
+
+							<p:outputLabel value="Tombamento" />
+							<p:outputLabel
+								value="#{entradaBombaBean.bombasEstoque.laudo.bomba.tombamento}" />
+						</p:panelGrid>
+					</p:panel>
+
+					<br />
+
+					<p:panel header="Laudo da bomba" toggleable="true"
+						toggleOrientation="horizontal">
+						<p:panelGrid columns="2" id="pnlBombaLaudo" style="width:90%;">
+
+							<p:outputLabel value="Código" />
+							<p:outputLabel
+								value="#{entradaBombaBean.bombasEstoque.laudo.codigo}" />
+
+							<p:outputLabel value="Data laudo" />
+							<p:outputLabel
+								value="#{entradaBombaBean.bombasEstoque.laudo.dataLaudo}"
+								title="Data a mostrar quando a bomba foi recuperada">
+								<f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR"
+									timeZone="America/Sao_Paulo" />
+							</p:outputLabel>
+
+							<p:outputLabel value="Status" />
+							<p:outputLabel
+								value="#{entradaBombaBean.bombasEstoque.laudo.situacaoFormatada()}" />
+
+							<p:outputLabel value="Detalhes" />
+							<p:outputLabel
+								value="#{entradaBombaBean.bombasEstoque.laudo.detalhes}" />
+						</p:panelGrid>
+					</p:panel>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Entrada de Bomba" widgetVar="dlgFinalizar"
+			modal="true" showEffect="fade" hideEffect="fade" resizable="false"
+			position="center" appendTo="@(body)" minimizable="false">
+			<h:form id="formFinalizar">
+
+				<p:panelGrid columns="2" id="pnlFinalizar">
+					<p:outputLabel value="Data atual " />
+					<p:outputLabel value="#{entradaBombaBean.entradaBomba.dataAtual}">
+						<f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR"
+							timeZone="America/Sao_Paulo" />
+					</p:outputLabel>
+
+					<p:outputLabel value="Quantidade total " />
+					<p:outputLabel
+						value="#{entradaBombaBean.entradaBomba.quantidadeTotal}" />
+
+					<p:outputLabel value="Data de entrada " for="data" />
+					<p:calendar value="#{entradaBombaBean.entradaBomba.dataEntrada}"
+						id="data" required="true"
+						requiredMessage="O campo 'Data de entrada' é obrigatório"
+						mask="true" showOn="button" pattern="dd/MM/yyyy HH:mm:ss"
+						locale="pt_BR" title="Mostrar calendário" mode="popup" />
+
+					<p:outputLabel value="Cidade" for="cidade" />
+					<p:selectOneMenu
+						value="#{entradaBombaBean.entradaBomba.cidadeEntrada}"
+						filter="true" required="true"
+						requiredMessage="O campo 'cidade' deve ser preenchido"
+						converter="omnifaces.SelectItemsConverter" id="cidade">
+						<f:selectItem noSelectionOption="true"
+							itemLabel="Selecione uma cidade" />
+						<f:selectItems value="#{entradaBombaBean.cidades}" var="cidade"
+							itemValue="#{cidade}" itemLabel="#{cidade.nome}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Poço " for="poco" />
+					<p:selectOneMenu value="#{entradaBombaBean.entradaBomba.pocoItem}"
+						filter="true" required="false"
+						converter="omnifaces.SelectItemsConverter" id="poco"
+						title="Não selecione casnçao tenha poço">
+						<f:selectItem noSelectionOption="true"
+							itemLabel="Selecione um poço" />
+						<f:selectItems value="#{entradaBombaBean.pocos}" var="poco"
+							itemValue="#{poco}"
+							itemLabel="#{poco.descricao} - #{poco.endereco}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Funcionario" for="funcionario" />
+					<p:selectOneMenu
+						value="#{entradaBombaBean.entradaBomba.funcionarioEntrada}"
+						filter="true" required="true"
+						requiredMessage="O campo 'funcionario' deve ser preenchido"
+						converter="omnifaces.SelectItemsConverter" id="funcionario">
+						<f:selectItem noSelectionOption="true"
+							itemLabel="Selecione um funcionário" />
+						<f:selectItems value="#{entradaBombaBean.funcionarios}"
+							var="funcionario" itemValue="#{funcionario}"
+							itemLabel="#{funcionario.pessoa.nome} - #{funcionario.pessoa.cpf}" />
+					</p:selectOneMenu>
+					<p:outputLabel value="Observação" for="observacao" />
+
+					<p:inputTextarea value="#{entradaBombaBean.entradaBomba.obs}"
+						required="false" id="observacao" counter="display" maxlength="200"
+						counterTemplate="{0} caracteres digitados" autoResize="false" rows="5" cols="30" />
+
+					<h:outputText id="display" />
+
+
+				</p:panelGrid>
+
+				<div align="right">
+					<p:panelGrid columns="2">
+						<p:commandButton value="Voltar"
+							oncomplete="PF('dlgFinalizar').hide();" />
+						<p:commandButton value="Salvar"
+							actionListener="#{entradaBombaBean.salvar}"
+							update=":mensagem :formList:table formList:tableItens " />
+					</p:panelGrid>
+				</div>
+			</h:form>
+		</p:dialog>
+
+
+	</ui:define>
+
+</ui:composition>

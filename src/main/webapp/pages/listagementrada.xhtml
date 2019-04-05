@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+
+	<ui:define name="conteudo">
+
+		<h:form id="formlistagem">
+			<p:panel header="Listagem de entrada de bombas">
+				<p:dataTable paginator="true"
+					emptyMessage="nenhum registro encontrado"
+					value="#{listagemEntradaBombaBean.entradaBombas}" var="entrada"
+					rows="5" id="tabela" style="text-align: center;"
+					paginatorPosition="top"
+					filteredValue="#{listagemEntradaBombaBean.filterEntradaBomba}">
+
+					<p:column style="width: 16px">
+						<p:rowToggler />
+					</p:column>
+
+					<p:column headerText="Código" filterBy="#{entrada.codigo}"
+						sortBy="#{entrada.codigo}" style="width:10%;">
+						<p:outputLabel value="#{entrada.codigo}" />
+
+					</p:column>
+
+					<p:column headerText="Data de entrada"
+						filterBy="#{entrada.dataAtual}" sortBy="#{entrada.dataAtual}">
+						<p:outputLabel value="#{entrada.dataAtual}">
+							<f:convertDateTime locale="pt_BR" pattern="dd/MM/yyyy" />
+						</p:outputLabel>
+
+					</p:column>
+
+					<p:column headerText="Horário entrada da bomba"
+						filterBy="#{entrada.dataEntrada}" sortBy="#{entrada.dataEntrada}">
+						<p:outputLabel value="#{entrada.dataEntrada}">
+							<f:convertDateTime locale="pt_BR" pattern="dd/MM/yyyy HH:mm" />
+						</p:outputLabel>
+					</p:column>
+
+					<p:column headerText="Funcionário"
+						filterBy="#{entrada.funcionarioEntrada.pessoa.nome}"
+						sortBy="#{entrada.funcionarioEntrada.pessoa.nome}">
+						<p:outputLabel value="#{entrada.funcionarioEntrada.pessoa.nome}" />
+					</p:column>
+
+					<p:column headerText="Cidade"
+						filterBy="#{entrada.cidadeEntrada.nome}"
+						sortBy="#{entrada.cidadeEntrada.nome}">
+						<p:outputLabel value="#{entrada.cidadeEntrada.nome}" />
+					</p:column>
+
+					<p:column headerText="Poço utilizado"
+						filterBy="#{entrada.pocoItem.endereco}"
+						sortBy="#{entrada.pocoItem.endereco}">
+						<h:outputText value="#{entrada.pocoItem.endereco}" />
+					</p:column>
+
+					<p:column headerText="Situação"
+						filterBy="#{entrada.situacaoEntradaFormatada}">
+						<h:outputText value="#{entrada.situacaoEntradaFormatada}" />
+					</p:column>
+
+					<p:rowExpansion>
+						<p:dataTable emptyMessage="Nenhum registro encontrado"
+							value="#{entrada.itemBombaEntradas}" var="bomba"
+							style="width:50%">
+							<p:column headerText="Fabricante" style="text-align:center">
+								<p:outputLabel
+									value="#{bomba.bombasEstoqueItem.bomba.fabricante.nome}" />
+							</p:column>
+
+							<p:column headerText="Modelo" style="text-align:center">
+								<p:outputLabel value="#{bomba.bombasEstoqueItem.bomba.modelo}" />
+							</p:column>
+
+							<p:column headerText="Potência" style="text-align:center">
+								<p:outputLabel value="#{bomba.bombasEstoqueItem.bomba.potencia}" />
+							</p:column>
+
+							<p:column headerText="Quantidade" style="text-align:center">
+								<p:outputLabel value="#{bomba.quantidadePacialItem}" />
+							</p:column>
+						</p:dataTable>
+					</p:rowExpansion>
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

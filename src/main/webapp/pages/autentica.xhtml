@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/autenticacaomodelo.xhtml">
+
+	<ui:define name="conteudoAutenticacao">
+
+
+		<h:form id="formAuth">
+
+
+			<p:panel id="pnlAuth" styleClass="centralizarPanel" >
+				<div align="center">
+					<p:graphicImage library="images" name="logo_agespisa.jpg"
+						width="86%" height="90%" />
+				</div>
+				
+                 <div align="center">
+				<p:panelGrid columns="2">
+					<p:outputLabel value="CPF" for="cpf" />
+					<p:inputMask mask="999.999.999-99" size="15" maxlength="40"
+						required="true"
+						requiredMessage="O campo 'CPF' deve ser preenchido"
+						value="#{autenticacaoBean.usuario.pessoa.cpf}" id="cpf"
+						placeholder="Inserir CPF" />
+
+					<p:outputLabel value="Senha" for="senha" />
+					<p:password size="15" maxlength="35" title="Entre com a senha"
+						id="senha" required="true"
+						requiredMessage="O campo 'Senha' deve ser preenchido"
+						value="#{autenticacaoBean.usuario.senha}"
+						placeholder="Inserir senha" />
+				</p:panelGrid>
+				</div>
+				<f:facet name="footer">
+					<div align="center">
+						<p:commandButton value="Acessar" update=":msgAuth"
+							actionListener="#{autenticacaoBean.autenticar()}"
+							style="width:120px;height:30px" title="Acesse agora">
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+					</div>
+				</f:facet>
+			</p:panel>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

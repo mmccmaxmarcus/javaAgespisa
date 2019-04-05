@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+	<session-factory>
+
+		<!-- Configuração do banco de dados -->
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="connection.url">jdbc:mysql://localhost:3306/gerenciamento_agespisa</property>
+		<property name="connection.username">root</property>
+		<property name="connection.password">root</property>
+
+		<!-- Pool de conexões -->
+		<property name="connection.pool_size">5</property>
+
+		<!-- SQL dialect -->
+		<property name="dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
+
+		<!-- Gerenciamento do contexto das sessões -->
+		<property name="current_session_context_class">thread</property>
+
+		<!-- Cache segundo nivel -->
+		<property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>
+
+		<!-- Mostra SQLs geradas -->
+		<property name="show_sql">true</property>
+
+		<!-- Cria as tabelas do banco de dados -->
+		<property name="hbm2ddl.auto">validate</property>
+
+		<!-- Mapeamento de entidades -->
+		<mapping class="br.com.agespisa.entidade.Pessoa" />
+		<mapping class="br.com.agespisa.entidade.Cidade" />
+		<mapping class="br.com.agespisa.entidade.Funcionario" />
+		<mapping class="br.com.agespisa.entidade.Usuario" />
+		<mapping class="br.com.agespisa.entidade.Fornecedor" />
+		<mapping class="br.com.agespisa.entidade.DemonstrativoBomba" />
+		<mapping class="br.com.agespisa.entidade.DemonstrativoBombasItens" />
+		<mapping class="br.com.agespisa.entidade.Estado" />
+		<mapping class="br.com.agespisa.entidade.Poco" />
+		<mapping class="br.com.agespisa.entidade.Bomba" />
+		<mapping class="br.com.agespisa.entidade.Fabricante" />
+		<mapping class="br.com.agespisa.entidade.BombasEstoque" />
+		<mapping class="br.com.agespisa.entidade.EntradaBomba" />
+		<mapping class="br.com.agespisa.entidade.ItemBombaEntrada" />
+		<mapping class="br.com.agespisa.entidade.SaidaBomba" />
+		<mapping class="br.com.agespisa.entidade.ItemBombaSaida" />
+		<mapping class="br.com.agespisa.entidade.Cargo" />
+		<mapping class="br.com.agespisa.entidade.Lotacao" />
+         <mapping class="br.com.agespisa.entidade.Laudo" />
+        
+
+	</session-factory>
+
+</hibernate-configuration>

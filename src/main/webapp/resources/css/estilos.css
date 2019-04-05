@@ -1,0 +1,36 @@
+@charset "UTF-8";
+
+.ui-widget, .ui-widget .ui-widget {
+	font-size: 93%;
+}
+
+.ui-layout-north {
+	z-index: 20 !important;
+	overflow: visible !important;;
+}
+
+.ui-layout-north .ui-layout-unit-content {
+	overflow: visible !important;
+}
+
+.body {
+	background-color: #FFFFFF;
+}
+
+.centralizaColuna{
+	text-align: center;
+}
+
+.centralizarPanel {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	margin-left: -120px;
+	margin-top: -90px;
+	width: auto;
+	height: 205px;
+}
+
+.negrito {
+ font-weight: bold;
+}

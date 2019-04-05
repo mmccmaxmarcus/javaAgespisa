@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:insert name="metadata" />
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Agespisa</title>
+	<h:outputStylesheet library="css" name="estilos.css" />
+	<h:outputScript library="js" name="scripts.js" />
+</h:head>
+
+<h:body>
+	<p:growl id="mensagem" />
+
+	<p:layout fullPage="true">
+
+		<p:layoutUnit id="top" position="north" size="50">
+			<h:form>
+				<p:menubar>
+					<p:submenu label="Cadastrar" icon="ui-icon-document">
+
+						<p:menuitem value="Funcionário" url="/pages/funcionario.xhtml" />
+						<p:menuitem value="Pessoa" url="/pages/pessoa.xhtml" />
+						<p:menuitem value="Usuário" url="/pages/usuario.xhtml" />
+						<p:menuitem value="Poço" url="/pages/poco.xhtml" />
+						<p:menuitem value="Bomba" url="/pages/bomba.xhtml" />
+						<p:menuitem value="Cidade" url="/pages/cidade.xhtml" />
+					</p:submenu>
+
+					<p:submenu label="Demonstrativo" icon="ui-icon-pencil">
+						<p:menuitem value="Bombas" url="/pages/demonstrativobomba.xhtml" />
+					</p:submenu>
+
+					<p:submenu label="Ajuda" icon="ui-icon-help">
+						<p:menuitem value="Contato" url="#" />
+						<p:menuitem value="Sobre" url="#" />
+					</p:submenu>
+                     
+					<p:menuitem value="Sair" url="/pages/autentica.xhtml"
+						style="position: absolute; width:50px; right: 6px;"
+						title="Aperte aqui para sair" icon="ui-icon-extlink" />
+						
+				</p:menubar>
+			</h:form>
+		</p:layoutUnit>
+
+		<p:layoutUnit id="bottom" position="south">
+			<p:clock>
+				<f:convertDateTime locale="pt_BR" />
+			</p:clock>
+		</p:layoutUnit>
+
+		<p:layoutUnit id="left" position="west" size="300" resizable="false"
+			closable="false" collapsible="true" header="Opção" minSize="200">
+
+			<h:form>
+				<p:menu toggleable="true" style="width: 282px;">
+					<p:submenu label="Navegar" style="width: 275px;">
+						<p:menuitem value="Página Principal" url="/pages/principal.xhtml"
+							style="width: 250px;" />
+					</p:submenu>
+
+					<p:submenu label="Controles" style="width: 275px;">
+					    <p:menuitem value="Laudo de bombas" style="width: 250px;"
+							url="/pages/laudo.xhtml" />
+						<p:menuitem value="Entrada de bombas" style="width: 250px;"
+							url="/pages/entradabomba.xhtml" />
+						<p:menuitem value="Saída de bombas" style="width: 250px;"
+							url="/pages/entrada_saida.xhtml" />
+					</p:submenu>
+
+					<p:submenu label="Movimentações" style="width: 275px;">
+						<p:menuitem value="Lista de entrada de bomba"
+							url="/pages/listagementrada.xhtml" />
+						<p:menuitem value="Lista de saída de bomba" />
+					</p:submenu>
+				</p:menu>
+
+			</h:form>
+		</p:layoutUnit>
+
+		<p:layoutUnit id="center" position="center" collapsed="false"
+			collapsible="false">
+			<ui:insert name="conteudo" />
+		</p:layoutUnit>
+	</p:layout>
+
+
+</h:body>
+</html>

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewAction action="#{demonstrativoBombaBean.novo()}" />
+		</f:metadata>
+	</ui:define>
+	<ui:define name="conteudo">
+		<h:form id="formList">
+			<p:panel header="Demonstrativo de bombas">
+
+				<p:dataTable id="tabela" paginator="true" paginatorPosition="top"
+					var="demonstrativo"
+					value="#{demonstrativoBombaBean.demonstrativoBombasItens}"
+					selection="#{demonstrativoBombaBean.bombasItem}" rows="15"
+					style="text-align:center">
+					<f:facet name="header">
+						<p:commandButton value="Novo"
+							title="Adicionar nova linha no demonstrativo"
+							actionListener="#{demonstrativoBombaBean.novo()}"
+							icon="ui-icon-plus" oncomplete="PF('dlg').show();"
+							update=":mensagem :formCadastro:panel" id="btnNovo">
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+					</f:facet>
+
+					<p:column headerText="Poço"
+						filterBy="#{demonstrativo.poco.endereco}"
+						sortBy="#{demonstrativo.poco.endereco}}">
+						<p:outputLabel value="#{demonstrativo.poco.endereco}" />
+					</p:column>
+
+					<p:column headerText="Conjunto"
+						filterBy="#{demonstrativo.bomba.fabricante}"
+						sortBy="#{demonstrativo.bomba.fabricante}}">
+						<p:outputLabel
+							value="#{demonstrativo.bomba.fabricante.nome} - #{demonstrativo.bomba.modelo} - #{demonstrativo.bomba.potencia}" />
+					</p:column>
+
+					<p:column headerText="Data de Instalação"
+						filterBy="#{demonstrativo.dataInstalacao}"
+						sortBy="#{demonstrativo.dataInstalacao}">
+						<p:outputLabel value="#{demonstrativo.dataInstalacao}">
+							<f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR" />
+						</p:outputLabel>
+					</p:column>
+
+					<p:column headerText="Opções" width="50px;">
+						<p:commandButton icon="ui-icon-trash" title="Remover"
+							action="#{demonstrativoBombaBean.removerItemDemonstrativo(demonstrativo)}"
+							update=":formList:tabela">
+							
+						</p:commandButton>
+					</p:column>
+
+					<f:facet name="footer">
+						<div align="left">
+							<p:commandButton value="Finalizar"
+								title="Finalizar Demonstrativo"
+								oncomplete="PF('dlgFinalizar').show();"
+								update=":formFinalizar:panel :formList:tabela:btnNovo"
+								actionListener="#{demonstrativoBombaBean.finalizarDemonstrativo()}"
+								rendered="#{demonstrativoBombaBean.testeBotaoAdicionar()}">
+								<f:actionListener
+									type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+							</p:commandButton>
+						</div>
+					</f:facet>
+
+				</p:dataTable>
+			</p:panel>
+
+		</h:form>
+
+		<p:dialog header="Cadastrar - Novo Demonstrativo de Bombas"
+			widgetVar="dlg" modal="true" resizable="true" minimizable="false"
+			appendTo="@(body)" position="center" maximizable="true"
+			closable="true">
+			<h:form id="formCadastro">
+				<p:panelGrid columns="4" id="panel">
+					<p:outputLabel value="Poço" for="poco" />
+					<p:selectOneMenu id="poco" required="true"
+						requiredMessage="O campo 'poço' deve ser preenchido" filter="true"
+						value="#{demonstrativoBombaBean.bombasItem.poco}"
+						converter="omnifaces.SelectItemsConverter">
+						<f:selectItem noSelectionOption="true"
+							itemLabel="Selecione um poço" />
+						<f:selectItems var="poco" value="#{demonstrativoBombaBean.pocos}"
+							itemValue="#{poco}" itemLabel="#{poco.endereco} - #{poco.numero}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Submerso Centrífugo" for="sc" />
+					<p:inputText id="sc" maxlength="10" size="20"
+						value="#{demonstrativoBombaBean.bombasItem.submersoCentrifugo}"
+						required="true"
+						requiredMessage="O campo 'Submerso Centrífugo' deve ser preenchido" />
+
+					<p:outputLabel value="Conjunto Motor-Bomba" for="bomba" />
+					<p:selectOneMenu id="bomba" required="true"
+						requiredMessage="O campo 'Motor-Bomba' deve ser preenchido"
+						filter="true" value="#{demonstrativoBombaBean.bombasItem.bomba}"
+						converter="omnifaces.SelectItemsConverter">
+						<f:selectItem noSelectionOption="true"
+							itemLabel="Selecione um conjunto" />
+						<f:selectItems var="bomba"
+							value="#{demonstrativoBombaBean.bombas}" itemValue="#{bomba}"
+							itemLabel="#{bomba.fabricante.nome}-#{bomba.modelo}- #{bomba.potencia}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Vazão Poço" />
+					<p:inputText maxlength="50" size="15"
+						value="#{demonstrativoBombaBean.bombasItem.vazaoPoco}"
+						required="false" />
+
+					<p:outputLabel value="Vazão Bomba" />
+					<p:inputText maxlength="50" size="15"
+						value="#{demonstrativoBombaBean.bombasItem.vazaoBomba}"
+						required="false" />
+
+					<p:outputLabel value="Altura Manométrica" />
+					<p:inputText id="altura" maxlength="50" size="15"
+						value="#{demonstrativoBombaBean.bombasItem.alturaManometrica}"
+						required="false" />
+
+					<p:outputLabel value="Reservação" />
+					<p:inputText maxlength="50" size="15"
+						value="#{demonstrativoBombaBean.bombasItem.reservacao}"
+						required="false" />
+
+					<p:outputLabel value="Profundidade de Colocação" />
+					<p:inputText maxlength="50" size="15"
+						value="#{demonstrativoBombaBean.bombasItem.profundidadeColocacao}"
+						required="false" />
+
+					<p:outputLabel value="Diâmetro do tubo edutor" />
+					<p:inputText maxlength="50" size="15"
+						value="#{demonstrativoBombaBean.bombasItem.diametroTudoEdutor}"
+						required="false" />
+
+					<p:outputLabel value="Diâmentro do Barrilete" />
+					<p:inputText maxlength="50" size="15"
+						value="#{demonstrativoBombaBean.bombasItem.diametroBarrilete}"
+						required="false" />
+					<p:outputLabel value="Data de Instalação" for="dt" />
+					<p:calendar
+						value="#{demonstrativoBombaBean.bombasItem.dataInstalacao}"
+						id="dt" required="true" locale="pt_BR" />
+				</p:panelGrid>
+
+				<p:panelGrid columns="2">
+					<p:commandButton value="Adicionar"
+						actionListener="#{demonstrativoBombaBean.adicionarDemonstrativo()}"
+						update=":mensagem :formList:tabela :formCadastro:panel" />
+
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Finalizar Demonstrativo" closable="true"
+			resizable="true" draggable="false" widgetVar="dlgFinalizar"
+			modal="true" appendTo="@(body)">
+			<h:form id="formFinalizar">
+				<p:panelGrid columns="2" id="panel">
+					<p:outputLabel value="Data atual" />
+					<h:outputText
+						value="#{demonstrativoBombaBean.demonstrativoBomba.dataAtual}">
+						<f:convertDateTime timeZone="America/Sao_Paulo"
+							pattern="dd/MM/yyyy" locale="pt_BR" />
+					</h:outputText>
+
+					<p:outputLabel value="Funcionário" for="funcionario" />
+					<p:selectOneMenu id="funcionario" required="true"
+						requiredMessage="O campo 'funcionario' deve ser preenchido"
+						filter="true"
+						value="#{demonstrativoBombaBean.demonstrativoBomba.funcionario}"
+						converter="omnifaces.SelectItemsConverter">
+						<f:selectItem noSelectionOption="true"
+							itemLabel="Selecione um funcionario" />
+						<f:selectItems var="funcionario"
+							value="#{demonstrativoBombaBean.funcionarios}"
+							itemValue="#{funcionario}"
+							itemLabel="#{funcionario.pessoa.nome} - #{funcionario.pessoa.cpf}" />
+					</p:selectOneMenu>
+				</p:panelGrid>
+
+				<div align="right">
+					<p:panelGrid columns="2">
+						<p:commandButton value="Cancelar"
+							oncomplete="PF('dlgFinalizar').hide();" />
+						<p:commandButton value="Salvar"
+							actionListener="#{demonstrativoBombaBean.salvar()}"
+							update=":mensagem :formFinalizar:panel :formList:tabela"
+							action="demonstrativobomba?faces-redirect=true" />
+					</p:panelGrid>
+				</div>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

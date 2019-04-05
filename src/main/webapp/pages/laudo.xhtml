@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+
+
+	<ui:define name="conteudo">
+
+		<h:form id="formList">
+			<div align="center">
+				<p:panel header="Cadastrar Laudo - Bomba" style="width:75%;"
+					toggleable="true">
+					<div align="center">
+						<p:panelGrid columns="4" id="pnlLauda">
+
+							<p:outputLabel value="Bomba" for="bomba" />
+							<p:selectOneMenu value="#{laudoBean.laudo.bomba}"
+								converter="omnifaces.SelectItemsConverter" required="true"
+								requiredMessage="O campo 'Bomba' deve ser preenchido" id="bomba"
+								filter="true">
+								<f:selectItem noSelectionOption="true"
+									itemLabel="Selecione uma bomba" />
+								<f:selectItems value="#{laudoBean.bombas}" var="b"
+									itemValue="#{bomba}"
+									itemLabel="#{b.fabricante.nome} #{b.modelo}-#{b.potencia}" />
+							</p:selectOneMenu>
+
+							<p:outputLabel value="Data" />
+							<p:outputLabel value="#{laudoBean.laudo.dataLaudo}" size="10">
+								<f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR"
+									timeZone="America/Sao_Paulo" />
+							</p:outputLabel>
+
+							<p:outputLabel value="Status" for="status" />
+							<p:selectOneRadio id="status" required="true"
+								requiredMessage="O campo 'Status' deve ser preenchido"
+								value="#{laudoBean.laudo.situacao}">
+								<f:selectItem itemValue="M" itemLabel="Manutenção" />
+								<f:selectItem itemValue="R" itemLabel="Recuperado" />
+								<f:selectItem itemValue="I" itemLabel="Irrecuperável" />
+								<f:selectItem itemValue="O" itemLabel="Outros" />
+							</p:selectOneRadio>
+
+							<p:outputLabel value="Detalhe" />
+							<p:inputTextarea value="#{laudoBean.laudo.detalhes}" />
+						</p:panelGrid>
+					</div>
+
+					<br />
+
+					<div align="right">
+						<h:panelGrid columns="1">
+							<p:commandButton value="Adicionar"
+								actionListener="#{laudoBean.Adicionar()}"
+								update=":mensagem :formList:pnlLauda :formTable:table"
+								action="laudo?faces-redirect=true">
+								<f:actionListener
+									type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+							</p:commandButton>
+						</h:panelGrid>
+					</div>
+				</p:panel>
+			</div>
+		</h:form>
+
+		<p:separator />
+
+		<h:form id="formTable">
+			<p:panel header="Listagem de Laudos" toggleable="true">
+				<p:dataTable paginator="true"
+					emptyMessage="nenhum registro encontrado"
+					value="#{laudoBean.bombas}" var="l" rows="5" id="table"
+					style="text-align: center;" paginatorPosition="top">
+
+					<p:column style="width: 16px">
+						<p:rowToggler />
+					</p:column>
+
+					<p:column headerText="Código" filterBy="#{l.codigo}"
+						sortBy="#{l.codigo}" style="width:10%;">
+						<p:outputLabel value="#{l.codigo}" />
+					</p:column>
+
+					<p:column headerText="Fabricante" filterBy="#{l.fabricante.nome}"
+						sortBy="#{l.fabricante.nome}">
+						<p:outputLabel value="#{l.fabricante.nome}" />
+					</p:column>
+
+					<p:column headerText="Modelo" filterBy="#{l.modelo}"
+						sortBy="#{l.modelo}">
+						<p:outputLabel value="#{l.modelo}" />
+					</p:column>
+
+					<p:column headerText="Potência" filterBy="#{l.potencia}"
+						sortBy="#{l.potencia}">
+						<p:outputLabel value="#{l.potencia}" />
+					</p:column>
+
+					<p:column headerText="Opções">
+						<p:commandButton value="Adicionar ao estoque"
+							icon="ui-icon-circle-plus"
+							actionListener="#{laudoBean.adicionaEstoque}"
+							update="@this :mensagem :formEstoque:pnlEstoque">
+							<f:attribute name="bombaSelecionada" value="#{l}" />
+							<p:collector unique="true" value="#{laudoBean.bombasEstoque}"
+								addTo="#{laudoBean.bombasEstoques}" />
+						</p:commandButton>
+					</p:column>
+
+					<p:rowExpansion>
+						<p:dataTable emptyMessage="Nenhum laudo adicionado a bomba"
+							value="#{l.laudos}" var="laudo" style="width:50%">
+							<p:column headerText="Código" style="text-align:center">
+								<p:outputLabel value="#{laudo.codigo}" />
+							</p:column>
+
+							<p:column headerText="Data do Laudo" style="text-align:center">
+								<p:outputLabel value="#{laudo.dataLaudo}">
+									<f:convertDateTime locale="pt_BR" pattern="dd/MM/yyyy" />
+								</p:outputLabel>
+							</p:column>
+
+							<p:column headerText="Status" style="text-align:center">
+								<p:outputLabel value="#{laudo.situacaoFormatada()}" />
+							</p:column>
+
+							<p:column headerText="Detalhes" style="text-align:center">
+								<p:outputLabel value="#{laudo.detalhes}" />
+							</p:column>
+						</p:dataTable>
+					</p:rowExpansion>
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+
+		<p:dialog header="Adicionar - Estoque" widgetVar="dlgEstoque"
+			modal="true" showEffect="fade" hideEffect="fade" resizable="false"
+			position="center" appendTo="@(body)" minimizable="false" id="dlg">
+			<h:form id="formEstoque">
+				<p:panelGrid columns="2" id="pnlEstoque">
+
+					<p:outputLabel value="Data " for="data" />
+					<p:calendar value="#{laudoBean.bombasEstoque.dataEntrouEstoque}"
+						id="data" required="true"
+						requiredMessage="O campo 'Data' deve ser preenchido"
+						placeholder="Data"
+						title="Preencher data que a bomba entrou no estoque"
+						timeZone="America/Sao_Paulo" pattern="dd/MM/yyyy" locale="pt_BR">
+
+					</p:calendar>
+
+					<p:outputLabel value="Data de recuperação" />
+					<p:inputText readonly="true"
+						value="#{laudoBean.laudoSelecionado.dataLaudo}">
+						<f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR"
+							timeZone="America/Sao_Paulo" />
+					</p:inputText>
+
+					<p:outputLabel value="Status" />
+					<p:selectOneRadio id="status" required="true"
+						requiredMessage="O campo 'Status' deve ser preenchido"
+						value="#{laudoBean.laudoSelecionado.situacao}" disabled="true">
+						<f:selectItem itemValue="M" itemLabel="Manutenção" />
+						<f:selectItem itemValue="R" itemLabel="Recuperado" />
+						<f:selectItem itemValue="I" itemLabel="Irrecuperável" />
+						<f:selectItem itemValue="O" itemLabel="Outros" />
+					</p:selectOneRadio>
+
+					<p:outputLabel value="Fabricante" />
+					<p:inputText readonly="true"
+						value="#{laudoBean.laudoSelecionado.bomba.fabricante.nome}" />
+
+					<p:outputLabel value="Modelo" />
+					<p:inputText readonly="true"
+						value="#{laudoBean.laudoSelecionado.bomba.modelo}" />
+
+					<p:outputLabel value="Potência" />
+					<p:inputText readonly="true"
+						value="#{laudoBean.laudoSelecionado.bomba.potencia}" />
+
+					<p:outputLabel value="Vazão" />
+					<p:inputText readonly="true"
+						value="#{laudoBean.laudoSelecionado.bomba.vazao}" />
+					
+					<p:outputLabel value="A. Manumétrica" />
+					<p:inputText readonly="true"
+						value="#{laudoBean.laudoSelecionado.bomba.alturaManumetrica}" title="Altura manumétrica"/>
+					
+					<p:outputLabel value="Tombamento" />
+					<p:inputText readonly="true"
+						value="#{laudoBean.laudoSelecionado.bomba.tombamento}" />
+						
+					<p:outputLabel value="Detalhes" />
+					<p:inputTextarea readonly="true"
+						value="#{laudoBean.laudoSelecionado.detalhes}" />
+
+				</p:panelGrid>
+
+				<div align="right">
+					<p:panelGrid columns="2">
+						<p:commandButton value="Voltar"
+							oncomplete="PF('dlgEstoque').hide();" />
+						<p:commandButton value="Salvar" action="laudo?faces-redirect=true"
+							actionListener="#{laudoBean.salvarEstoque()}"
+							update=":mensagem :formTable:table :formEstoque:pnlEstoque"  />
+					</p:panelGrid>
+				</div>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

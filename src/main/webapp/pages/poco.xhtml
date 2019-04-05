@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+
+	<ui:define name="conteudo">
+
+		<h:form id="formList">
+			<p:panel header="Listagem de poços">
+				<p:dataTable var="poco" value="#{pocoBean.pocos}"
+					emptyMessage="nenhum registro encontrado" paginator="true"
+					rows="15" id="table" paginatorPosition="top"
+					style="text-align: center">
+					<f:facet name="header">
+						<p:commandButton value="Novo" title="Cadastrar - Poço"
+							icon="ui-icon-plus" oncomplete="PF('dlg').show();"
+							update=":formCadastro:panel" actionListener="#{pocoBean.novo}">
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+					</f:facet>
+
+					<p:column filterBy="#{poco.endereco}" headerText="Endereço"
+						sortBy="#{poco.endereco}">
+						<h:outputText value="#{poco.endereco}" />
+					</p:column>
+					<p:column filterBy="#{poco.numero}" headerText="Número"
+						sortBy="#{poco.numero}">
+						<h:outputText value="#{poco.numero}" />
+					</p:column>
+					<p:column filterBy="#{poco.cidade.nome}" headerText="Cidade"
+						sortBy="#{poco.cidade.nome}">
+						<h:outputText value="#{poco.cidade.nome}" />
+					</p:column>
+
+					<p:column headerText="Opções">
+						<p:commandButton value="Editar"
+							actionListener="#{pocoBean.editar}" icon="ui-icon-pencil"
+							update=":mensagem :formCadastro:panel :formList:table"
+							oncomplete="PF('dlg').show();">
+							<f:attribute name="pocoSelecionado" value="#{poco}" />
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+
+						<p:commandButton value="Excluir"
+							actionListener="#{pocoBean.excluir}"
+							update=":mensagem :formList:table " icon="ui-icon-trash">
+							<p:confirm header="Confirmação"
+								message="Deseja realmente excluir #{poco.endereco}?"
+								icon="ui-icon-alert" />
+							<f:attribute name="pocoSelecionado" value="#{poco}" />
+						</p:commandButton>
+					</p:column>
+
+				</p:dataTable>
+
+				<p:confirmDialog global="true" hideEffect="fade" showEffect="fade">
+					<p:commandButton value=" Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+
+					<p:commandButton value="Nao" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+
+			</p:panel>
+		</h:form>
+
+		<p:dialog header="Cadastrar - Poço" widgetVar="dlg" modal="true"
+			resizable="false" minimizable="true" appendTo="@(body)"
+			position="center" maximizable="true" closable="true">
+			<h:form id="formCadastro">
+				<p:panelGrid columns="2" id="panel">
+					<p:outputLabel value="Endereço" />
+					<p:inputText size="45" maxlength="100"
+						required="false"
+						value="#{pocoBean.poco.endereco}" />
+
+					<p:outputLabel value="Número" for="numero" />
+					<p:inputText id="numero" size="10" maxlength="5" required="false"
+						value="#{pocoBean.poco.numero}"
+						converterMessage="O campo 'número' informardo errado - somente números"
+						validatorMessage="O campo 'número' deve ser preenchido entre 1 - 999">
+						<f:validateDoubleRange minimum="1" maximum="999.00" />
+					</p:inputText>
+
+					<p:outputLabel value="Cidade" for="cidade" />
+					<p:selectOneMenu filter="true" id="cidade"
+						value="#{pocoBean.poco.cidade}"
+						converter="omnifaces.SelectItemsConverter" required="true"
+						requiredMessage="O campo deve ser preenchido">
+						<f:selectItem noSelectionOption="true"
+							itemLabel="Selecione um cidade" />
+						<f:selectItems var="cidade" value="#{pocoBean.cidades}"
+							itemValue="#{cidade}"
+							itemLabel="#{cidade.nome} - #{cidade.estado.sigla}" />
+					</p:selectOneMenu>
+
+				</p:panelGrid>
+
+				<p:panelGrid columns="2">
+					<p:commandButton value="Voltar" oncomplete="PF('dlg').hide();" />
+					<p:commandButton value="Salvar"
+						actionListener="#{pocoBean.salvar}"
+						update=":mensagem :formCadastro:panel :formList:table" />
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

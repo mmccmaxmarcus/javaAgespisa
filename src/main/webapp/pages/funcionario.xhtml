@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+
+	<ui:define name="conteudo">
+
+		<h:form id="formList">
+			<p:panel header="Listagem de Funcionários">
+				<p:dataTable var="funcionario"
+					value="#{funcionarioBean.funcionarios}"
+					emptyMessage="nenhum registro encontrado" paginator="true"
+					rows="15" id="table" paginatorPosition="top"
+					style="text-align: center">
+					<f:facet name="header">
+						<p:commandButton value="Novo" title="Cadastrar Funcionário"
+							icon="ui-icon-plus" oncomplete="PF('dlg').show();"
+							update=":formCadastro:panel"
+							actionListener="#{funcionarioBean.novo}">
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+					</f:facet>
+
+					<p:column filterBy="#{funcionario.pessoa.nome}" headerText="Nome"
+						sortBy="#{funcionario.pessoa.nome}">
+						<h:outputText value="#{funcionario.pessoa.nome}" />
+					</p:column>
+					<p:column filterBy="#{funcionario.matricula}"
+						headerText="Matrícula" sortBy="#{funcionario.matricula}">
+						<h:outputText value="#{funcionario.matricula}" />
+					</p:column>
+					<p:column filterBy="#{funcionario.cargo.nome}" headerText="Cargo"
+						sortBy="#{funcionario.cargo.nome}">
+						<h:outputText value="#{funcionario.cargo.nome}" />
+					</p:column>
+                      
+                      <p:column filterBy="#{funcionario.lotacao.nome}" headerText="Cargo"
+						sortBy="#{funcionario.lotacao.nome}">
+						<h:outputText value="#{funcionario.lotacao.nome}" />
+					</p:column>
+                      
+                      
+ 					<p:column headerText="Opções">
+						<p:commandButton value="Editar"
+							actionListener="#{funcionarioBean.editar}" icon="ui-icon-pencil"
+							update=":mensagem :formCadastro:panel :formList:table"
+							oncomplete="PF('dlg').show();">
+							<f:attribute name="funcionarioSelecionado" value="#{funcionario}" />
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+
+						<p:commandButton value="Excluir"
+							actionListener="#{funcionarioBean.excluir}"
+							update=":mensagem :formList:table " icon="ui-icon-trash">
+							<p:confirm header="Confirmação"
+								message="Deseja realmente excluir #{funcionario.pessoa.nome}?"
+								icon="ui-icon-alert" />
+							<f:attribute name="funcionarioSelecionado" value="#{funcionario}" />
+						</p:commandButton>
+					</p:column>
+
+				</p:dataTable>
+
+				<p:confirmDialog global="true" hideEffect="fade" showEffect="fade">
+					<p:commandButton value=" Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+
+					<p:commandButton value="Nao" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+
+			</p:panel>
+		</h:form>
+
+		<p:dialog header="Cadastrar - Funcionario" widgetVar="dlg"
+			modal="true" resizable="false" minimizable="true" appendTo="@(body)"
+			position="center" maximizable="true" closable="true">
+			<h:form id="formCadastro">
+				<p:panelGrid columns="2" id="panel">
+					<p:outputLabel value="Nome" for="nome" />
+					<p:selectOneMenu filter="true" id="nome"
+						value="#{funcionarioBean.funcionario.pessoa}"
+						converter="omnifaces.SelectItemsConverter" required="true"
+						requiredMessage="O campo deve ser preenchido">
+						<f:selectItem noSelectionOption="true"
+							itemLabel="Selecione um nome" />
+						<f:selectItems var="pessoa" value="#{funcionarioBean.pessoas}"
+							itemValue="#{pessoa}" itemLabel="#{pessoa.nome} - #{pessoa.cpf}" />
+					</p:selectOneMenu>
+
+
+					<p:outputLabel value="Matrícula" for="matricula" />
+					<p:inputText id="matricula" size="10" maxlength="10"
+						required="true"
+						requiredMessage="Campo 'matricula' deve ser preenchido"
+						value="#{funcionarioBean.funcionario.matricula}" />
+
+					<p:outputLabel value="Cargo" for="cargo" />
+					<p:autoComplete value="#{funcionarioBean.funcionario.cargo}"
+						id="cargo" var="c" itemValue="#{c}" itemLabel="#{c.nome}"
+						size="20" completeMethod="#{funcionarioBean.buscaCargo}"
+						forceSelection="true" converter="converterCargo" required="true"
+						requiredMessage="O campo 'Lotação' deve ser preenchido" />
+
+					<p:outputLabel value="Lotação" for="lotacao" />
+					<p:autoComplete value="#{funcionarioBean.funcionario.lotacao}"
+						id="lotacao" var="l" itemValue="#{l}" itemLabel="#{l.nome}"
+						size="20" completeMethod="#{funcionarioBean.buscaLotacao}"
+						forceSelection="true" converter="converterLotacao" required="true"
+						requiredMessage="O campo 'Lotação' deve ser preenchido" />
+
+
+				</p:panelGrid>
+
+				<p:panelGrid columns="2">
+					<p:commandButton value="Voltar" oncomplete="PF('dlg').hide();" />
+					<p:commandButton value="Salvar"
+						actionListener="#{funcionarioBean.salvar}"
+						update=":mensagem :formCadastro:panel :formList:table" />
+				</p:panelGrid>
+
+
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>
